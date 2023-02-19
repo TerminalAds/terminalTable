@@ -3,28 +3,31 @@
         <template>
             <div style="margin: 3rem 0.5rem">
 
-                <v-btn style="background-color: #863A6F" class="col-12 text-white font-weight-bold"
-                       @click="showSearch=!showSearch"> فیلتر
+                <v-btn style="background-image: linear-gradient(to right, #24C6DC,#514A9D);"
+                       class="col-12 text-white font-weight-bold"
+                       @click="showSearch=!showSearch">
+                    <i class="fa fa-search text-white ml-1"></i>
+                    فیلتر
                 </v-btn>
                 <div v-if="showSearch">
-                        <v-text-field
-                                v-model="options.search"
-                                label="جستجو"
-                                outlined
-                                required
-                                clearable
-                                @click:clear="searchReset"
-                                clear-icon="mdi-close-circle-outline"
-                                dense
-                                class="mt-1 py-0"
-                        >
-                            <template v-slot:append >
-                                <v-btn small outlined color="indigo" class="font-weight-bold px-0 mx-0"
-                                       @click="searchText">
-                                    <i class="fa fa-search" style="color: darkblue"></i>
-                                </v-btn>
-                            </template>
-                        </v-text-field>
+                    <v-text-field
+                            v-model="options.search"
+                            label="جستجو"
+                            outlined
+                            required
+                            clearable
+                            @click:clear="searchReset"
+                            clear-icon="mdi-close-circle-outline"
+                            dense
+                            class="mt-1 py-0"
+                    >
+                        <template v-slot:append>
+                            <v-btn small outlined color="indigo" class="font-weight-bold px-0 mx-0"
+                                   @click="searchText">
+                                <i class="fa fa-search" style="color: darkblue"></i>
+                            </v-btn>
+                        </template>
+                    </v-text-field>
 
                     <v-autocomplete
                             v-model="options.length"
@@ -39,36 +42,47 @@
                             prepend-inner-icon="fa fa-pencil-alt"
                     ></v-autocomplete>
                 </div>
-
-                <v-expansion-panels class="mt-10 px-0">
-                    <v-expansion-panel dense class="my-1 px-0" v-for="(item,index) in datas.data" :key="item.id">
-                        <v-expansion-panel-header class="py-0 " style="background:#863A6F;color:white">
+                <v-checkbox v-model="selectedAll" label="انتخاب همه" class="mt-10"></v-checkbox>
+                <v-expansion-panels style="border-radius: 10px;padding: 0" class="px-0">
+                    <v-expansion-panel style="border-radius: 10px;padding: 0" dense class="mb-1 elevation-2 p-0"
+                                       v-for="(item,index) in datas.data" :key="item.id">
+                        <v-expansion-panel-header class="py-0 "
+                                                  style="background-image: linear-gradient(to right, #5C258D, #4389A2);color:white;border-radius: 10px 10px 0px 0px">
+                            <template v-slot:actions>
+                                <v-icon color="white">
+                                    $expand
+                                </v-icon>
+                            </template>
                             <div class="row">
-                                <v-checkbox color="white" @click.stop/>
-                                <span class="ml-2 my-auto"> {{ setRows(index) }}#</span>
+                                <v-checkbox :value="item.id" v-model="selected" color="white" @click.stop/>
+                                <span class="ml-1 my-auto"> {{ setRows(index) }}</span>
                                 <span class="my-auto"
                                       v-for="header in headers.filter(item=>item.primary)" :key="header.name">
-                                    <span  class="mr-3 font-weight-bold text-center"
+                                    <span class="mr-2 font-weight-bold text-center"
                                           v-html="header.transform ? header.transform(item) : item[header.name]"></span>
                                 </span>
                             </div>
                         </v-expansion-panel-header>
-                        <v-expansion-panel-content style="background:#F7ECDE;" class="pt-4">
+                        <v-expansion-panel-content style="background:white;border-radius:0px 0px 10px 10px"
+                                                   class="pt-4">
                             <div class="row px-0 py-0 my-1" v-for="header in headers.filter((item)=>!item.primary)"
                                  :key="header.name">
-                                <div v-if="header.label!=='مدیریت' && header.label!=='ردیف' && header.label!=='' && header.label !== ''" class="col-6 py-0 my-0"
+                                <div v-if="header.label!=='مدیریت' && header.label!=='ردیف' && header.label!=='' && header.label !== ''"
+                                     class="col-6 py-0 my-0"
                                      :key="headers.value">
-                                    <p style="font-weight:bolder;color: #863A6F" v-html="header.label"></p>
+                                    <p style="font-weight:bolder;color: black" v-html="header.label"></p>
                                 </div>
                                 <div v-if="header.label!=='مدیریت'" class="col-6 py-0 my-0 text-left">
-                                    <p class="font-weight-bold" v-if="header.label!=='مدیریت' && header.label!=='ردیف' && header.label!== '' "
+                                    <p class="font-weight-bold"
+                                       v-if="header.label!=='مدیریت' && header.label!=='ردیف' && header.label!== '' "
                                        v-html="header.transform ? header.transform(item):item[header.name]"></p>
                                 </div>
-                                <v-btn style="background-color: #863A6F" class="col-12 text-white font-weight-bold"
+                                <v-btn style="background-image: linear-gradient(to right, #5C258D, #4389A2)"
+                                       class="col-12 text-white font-weight-bold"
                                        small v-else
                                        @click="showBtn=!showBtn"> مدیریت
                                 </v-btn>
-                                <div v-if="showBtn" class="py-0 col-12">
+                                <div v-if="showBtn" class="py-0 col-12" :key="index">
                                     <component :is="header.component" :data="item" :meta="header.meta"></component>
                                 </div>
                             </div>
@@ -76,14 +90,23 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
             </div>
-            <div class="text-center px-0 mx-0">
+            <div class="text-center col-12 px-0 mx-0">
+                <v-text-field
+                        v-model.number="options.page"
+                        label="شماره صفحه"
+                        @keypress.enter="changePaginate(options.page)"
+                        required
+                        :loading="finishedLoad"
+                        clearable
+                        clear-icon="mdi-close-circle-outline"
+                        dense
+                        class="mt-1 col-6 py-0"
+                ></v-text-field>
                 <v-pagination
                         v-model="options.page"
                         small
                         :length="pageCount"
                         @input="changePaginate($event)"
-                        @click="changePaginate($event)"
-                        :total-visible="5"
                         color="indigo"
                 ></v-pagination>
             </div>
@@ -131,8 +154,10 @@ export default {
         return {
             search: '',
             per: 0,
+            selected: [],
             showBtn: false,
             showSearch: false,
+            finishedLoad: false,
             expanded: [],
             lengthPage: [
                 {text: 10, value: 10},
@@ -154,8 +179,11 @@ export default {
             }
         },
         changePaginate(e) {
+            this.finishedLoad = true
             this.options.page = e;
-            this.getData()
+            this.getData();
+            this.finishedLoad = false
+            this.selectedAll = false;
         },
         changeLength() {
             this.getData()
@@ -164,15 +192,29 @@ export default {
             this.getData()
         },
         searchReset() {
-            this.options.search='';
+            this.options.search = '';
             this.getData()
         },
         setRows(val) {
-            let row = (this.currentPage-1) * Number(this.perPage);
+            let row = (this.currentPage - 1) * Number(this.perPage);
             return row + val + 1;
         }
     },
-
+    computed: {
+        selectedAll: {
+            set(val) {
+                this.selected = [];
+                if (val) {
+                    this.datas.data.forEach((item) => {
+                        this.selected.push(item.id)
+                    })
+                }
+            },
+            get() {
+                return this.selected.length === this.datas.data
+            }
+        }
+    },
     mounted() {
         this.getData()
     }
