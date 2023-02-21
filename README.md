@@ -2,22 +2,19 @@
 
 ## Project setup
 ```
-yarn install
+git submodule add git@github.com:Negindorali/terminalTable.git src/core/plugins/mobileTable
 ```
 
-### Compiles and hot-reloads for development
+### how can i use it?
 ```
-yarn serve
-```
+First you have to edit main.js by this code below:
 
-### Compiles and minifies for production
-```
-yarn build
-```
+import mobileTable from './core/plugins/mobileTable/src/install'
 
-### Lints and fixes files
-```
-yarn lint
+ ###then
+ 
+ Vue.use(mobileTable);
+
 ```
 
 ### Customize configuration
