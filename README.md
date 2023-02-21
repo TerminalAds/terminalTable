@@ -7,8 +7,6 @@ git submodule add git@github.com:Negindorali/terminalTable.git src/core/plugins/
 
 #### how can i use it?
 ```
-First you have to edit main.js by this code below:
-
 import mobileTable from './core/plugins/mobileTable/src/install'
  
 Vue.use(mobileTable);
