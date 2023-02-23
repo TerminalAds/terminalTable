@@ -241,6 +241,12 @@ export default {
     },
     mounted() {
         this.getData()
+    },
+    watch:{
+        selected:()=>{
+            console.log(this.selected)
+            this.$emit('input', this.selected)
+        }
     }
 }
 </script>
