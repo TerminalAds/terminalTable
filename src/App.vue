@@ -15,7 +15,8 @@
                                 </template>
                                 فیلتر
                             </v-expansion-panel-header>
-                            <v-expansion-panel-content style="background:white;border-radius:0px 0px 10px 10px" class="pt-4">
+                            <v-expansion-panel-content style="background:white;border-radius:0px 0px 10px 10px"
+                                                       class="pt-4">
                                 <div>
                                     <v-text-field
                                             v-model="options.search"
@@ -83,7 +84,8 @@
                             </v-expansion-panel-header>
                             <v-expansion-panel-content style="background:white;border-radius:0px 0px 10px 10px"
                                                        class="pt-4">
-                                <div class="row px-0 py-0 my-1" v-for="header in headers.filter((item)=>!item.primary && !item.isCheckBox)"
+                                <div class="row px-0 py-0 my-1"
+                                     v-for="header in headers.filter((item)=>!item.primary && !item.isCheckBox)"
                                      :key="header.name">
                                     <div v-if="header.label!=='مدیریت' && header.label!=='ردیف' && header.label!=='' && header.label !== ''"
                                          class="col-6 py-0 my-0"
@@ -242,8 +244,8 @@ export default {
     mounted() {
         this.getData()
     },
-    watch:{
-        selected:()=>{
+    watch: {
+        selected() {
             console.log(this.selected)
             this.$emit('input', this.selected)
         }
