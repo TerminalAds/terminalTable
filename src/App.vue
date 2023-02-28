@@ -73,7 +73,9 @@
                                     </v-icon>
                                 </template>
                                 <div class="row">
-                                    <v-checkbox :value="item.id" v-model="selected" color="white" @click.stop/>
+                                    <v-checkbox :value="selector!==''? item[selector]:item.id" v-model="selected"
+                                                color="white"
+                                                @click.stop/>
                                     <span class="ml-1 my-auto"> {{ setRows(index) }}</span>
                                     <span class="my-auto"
                                           v-for="header in headers.filter(item=>item.primary)" :key="header.name">
@@ -88,11 +90,11 @@
                                      v-for="header in headers.filter((item)=>!item.primary && !item.isCheckBox)"
                                      :key="header.name">
                                     <div v-if="header.label!=='مدیریت' && header.label!=='ردیف' && header.label!=='' && header.label !== ''"
-                                         class="col-6 py-0 my-0"
+                                         class="col-6 text-right py-0 my-0"
                                          :key="headers.value">
                                         <p style="font-weight:bolder;color: black" v-html="header.label"></p>
                                     </div>
-                                    <div v-if="header.label!=='مدیریت'" class="col-6 py-0 my-0 text-left">
+                                    <div v-if="header.label!=='مدیریت'" class="col py-0 my-0 text-left">
                                         <p class="font-weight-bold"
                                            v-if="header.label!=='مدیریت' && header.label!=='ردیف' && header.label!== '' "
                                            v-html="header.transform ? header.transform({data:item}):item[header.name]"></p>
@@ -109,31 +111,30 @@
                             </v-expansion-panel-content>
                         </v-expansion-panel>
                     </v-expansion-panels>
-                    <div class="text-center col-12 px-0 mt-4 mx-0">
-                        <div class="d-flex">
-                            <v-text-field
-                                    v-model.number="options.page"
-                                    label="شماره صفحه"
-                                    @keypress.enter="changePaginate(options.page)"
-                                    required
-                                    :loading="finishedLoad"
-                                    dense
-                                    class="mt-1 col-6 py-0"
-                            ></v-text-field>
-                            <v-btn small outlined color="indigo" class="font-weight-bold mt-4 mr-auto mx-3"
-                                   @click="changePaginate(options.page)">
-                                <i class="fa fa-search ml-1" style="color: darkblue"></i>
-                                جستجوی صفحه
-                            </v-btn>
-                        </div>
-                        <v-pagination
-                                v-model="options.page"
-                                small
-                                :length="pageCount"
-                                @input="changePaginate($event)"
-                                color="indigo"
-                        ></v-pagination>
+                </div>
+                <div class="text-center col-12 px-0 mt-4 mx-0">
+                    <div class="d-flex">
+                        <v-text-field
+                                v-model.number="options.page"
+                                label="شماره صفحه"
+                                required
+                                :loading="finishedLoad"
+                                dense
+                                class="mt-1 col-6 py-0"
+                        ></v-text-field>
+                        <v-btn small outlined color="indigo" class="font-weight-bold mt-4 mr-auto mx-3"
+                               @click="changePaginate(options.page)">
+                            <i class="fa fa-search ml-1" style="color: darkblue"></i>
+                            جستجوی صفحه
+                        </v-btn>
                     </div>
+                    <v-pagination
+                            v-model="options.page"
+                            small
+                            :length="pageCount"
+                            @input="changePaginate($event)"
+                            color="indigo"
+                    ></v-pagination>
                 </div>
             </div>
         </template>
@@ -150,6 +151,10 @@ export default {
         datas: {
             required: true,
             default: []
+        },
+        selector: {
+            required: false,
+            default: ''
         },
         headers: {
             required: true,
@@ -232,7 +237,7 @@ export default {
                 this.selected = [];
                 if (val) {
                     this.datas.data.forEach((item) => {
-                        this.selected.push(item.id)
+                        this.selected.push(this.selector !== '' ? item[this.selector] : item.id)
                     })
                 }
             },
