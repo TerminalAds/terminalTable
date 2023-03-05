@@ -49,6 +49,8 @@
                                             dense
                                             prepend-inner-icon="fa fa-pencil-alt"
                                     ></v-autocomplete>
+                                    <slot name="filters"
+                                          :tableFilters="options.hasOwnProperty('filters') ? options.filters : options"></slot>
                                 </div>
 
                             </v-expansion-panel-content>
@@ -171,6 +173,10 @@ export default {
             default: () => {
             }
         },
+        onTablePropsChanged: {
+            default: () => {
+            }
+        },
         pageCount: {
             default: 0
         },
@@ -252,6 +258,12 @@ export default {
     watch: {
         selected() {
             this.$emit('input', this.selected)
+        },
+        options: {
+            handler() {
+                this.onTablePropsChanged()
+            },
+            deep: true
         }
     }
 }
