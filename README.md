@@ -2,7 +2,7 @@
 
 ## Project setup
 ```
-git submodule add git@github.com:Negindorali/terminalTable.git src/core/plugins/mobileTable
+git submodule add git@github.com:TerminalAds/terminalTable.git src/core/plugins/mobileTable
 ```
 
 #### how can i use it?
