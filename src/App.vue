@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <template>
-            <div>
+            <div v-if="isMobile">
                 <div style="margin: 3rem 0.5rem">
                     <v-expansion-panels style="padding: 0" class="px-0">
                         <v-expansion-panel dense class="mb-1 elevation-2 p-0">
@@ -139,6 +139,65 @@
                     ></v-pagination>
                 </div>
             </div>
+            <div v-if="!isMobile"
+            >
+                <data-table
+                        :data="datas"
+                        :columns="headers"
+                        :debounce-delay="3000"
+                        :translate="translate"
+                        :pagination="pagination"
+                        :orderBy="options.column"
+                        :orderDir="options.dir"
+                        :per-page="[10, 25, 50, 100, 500]"
+                        @on-table-props-changed="reloadTable"
+                        class="pt-5 table-striped text-center table-hover table-responsive-lg table-responsive-md table-responsive-sm table-responsive-xs"
+                >
+                    <template slot="filters" slot-scope="{ tableFilters, perPage }">
+                        <div class="row mx-auto justify-content-between">
+                            <div class="col-md-3 order-1">
+                                <v-autocomplete
+                                        v-model="options.length"
+                                        label="تعداد در صفحه"
+                                        :items="lengthPage"
+                                        item-text="text"
+                                        @change="changeLength"
+                                        item-value="value"
+                                        outlined
+                                        required
+                                        dense
+                                        prepend-inner-icon="fa fa-pencil-alt"
+                                ></v-autocomplete>
+                            </div>
+                            <div v-if="slotCount<2" class="col-md-4 order-2">
+                                <slot name="filters"
+                                      :tableFilters="options.hasOwnProperty('filters') ? options.filters : options"></slot>
+                            </div>
+
+                            <div class="col-md-3 order-6">
+                                <v-text-field
+                                        v-model="options.search"
+                                        label="جستجو"
+                                        outlined
+                                        required
+                                        @change="searchText"
+                                        clearable
+                                        append-icon="fa fa-search"
+                                        @click:clear="searchReset"
+                                        clear-icon="mdi-close-circle-outline"
+                                        dense
+                                        class="py-0"
+                                ></v-text-field>
+                            </div>
+                        </div>
+                        <div v-if="slotCount >= 2" class="row mx-auto justify-between">
+                            <slot name="filters"
+                                  :tableFilters="options.hasOwnProperty('filters') ? options.filters : options"></slot>
+                        </div>
+                    </template>
+
+                </data-table>
+            </div>
         </template>
     </v-app>
 </template>
@@ -146,6 +205,7 @@
 <script>
 import {Axios2} from "@/main";
 import Buttons from "../src/templateBtn";
+import {debounce} from "@/main";
 
 export default {
     components: {Buttons},
@@ -155,6 +215,10 @@ export default {
             default: []
         },
         selector: {
+            required: false,
+            default: ''
+        },
+        url: {
             required: false,
             default: ''
         },
@@ -173,10 +237,10 @@ export default {
             default: () => {
             }
         },
-        onTablePropsChanged: {
-            default: () => {
-            }
-        },
+        // onTablePropsChanged: {
+        //     default: () => {
+        //     }
+        // },
         pageCount: {
             default: 0
         },
@@ -191,6 +255,7 @@ export default {
         return {
             search: '',
             per: 0,
+            slotCount: '',
             selected: [],
             showBtn: false,
             showSearch: false,
@@ -204,6 +269,17 @@ export default {
                 {text: 500, value: 500},
             ],
             calories: '',
+            translate: {
+                nextButton: 'بعدی',
+                previousButton: 'قبلی',
+                rowsPerPageText: 'تعداد در صفحه',
+                noDataText: 'داده ای برای نمایش وجود ندارد',
+                placeholderSearch: 'جستجو کنید..',
+            },
+            pagination: {
+                align: 'right',
+                limit: 4
+            },
         }
     },
     methods: {
@@ -235,7 +311,14 @@ export default {
         setRows(val) {
             let row = (this.currentPage - 1) * Number(this.perPage);
             return row + val + 1;
-        }
+        },
+        reloadTable(tableProps=this.options) {
+            debounce(() => {
+                this.options.page = this.datas.current_page;
+                this.getData(this.url, tableProps);
+            }, 1000);
+
+            },
     },
     computed: {
         selectedAll: {
@@ -250,10 +333,30 @@ export default {
             get() {
                 return this.selected.length === this.datas.data
             }
-        }
+        },
+        isMobile() {
+            switch (this.$vuetify.breakpoint.name) {
+                case 'xs':
+                    this.getData(this.url);
+                    return true
+                case 'sm':
+                    this.getData(this.url);
+                    return true
+                case 'md':
+                    this.getData(this.url);
+                    return false
+                case 'lg':
+                    this.getData(this.url);
+                    return false
+                case 'xl':
+                    this.getData(this.url);
+                    return false
+            }
+        },
     },
     mounted() {
-        this.getData()
+        this.getData();
+        this.slotCount = this.$slots.filters.length
     },
     watch: {
         selected() {
@@ -261,7 +364,7 @@ export default {
         },
         options: {
             handler() {
-                this.onTablePropsChanged()
+                this.reloadTable(this.options)
             },
             deep: true
         }

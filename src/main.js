@@ -8,6 +8,14 @@ Vue.config.productionTip = false
 
 Vue.use(axios)
 
+let timer = null;
+
+export const debounce = function (fn, delay) {
+  clearTimeout(timer);
+
+  timer = setTimeout(fn, delay)
+}
+
 export const Axios2 = axios.create({
   baseURL: process.env.VUE_APP_URL,
   timeout: 15000,
