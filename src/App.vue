@@ -22,6 +22,7 @@
                                             v-model="options.search"
                                             label="جستجو"
                                             outlined
+                                            @keypress.enter="searchText"
                                             required
                                             clearable
                                             @click:clear="searchReset"
